@@ -1,0 +1,6 @@
+.localhost-ssl/private.*
+
+dist/
+node_modules/
+
+yarn-error.log
