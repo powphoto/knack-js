@@ -1,3 +1,8 @@
+// TODO: How can we define these in the calling code instead?
+const
+  INTEGROMAT_EVENT_ROUTER_URL = 'https://hook.integromat.com/vurn2sr196dggag5fa2lrcdaqwjk4bm0',
+  INTEGROMAT_TIMEOUT_MS = 20_000;
+
 class DeferredError extends Error {
 }
 
@@ -83,7 +88,7 @@ async function generateEvent(key, ref, custom={}) {
   return json;
 }
 
-async function onInlineReminderClick(event) {
+async function onInlineReminderClick($, event) {
   // if the text is hyperlinked this will prevent the browser from updating the url
   event.preventDefault();
   // prevent the inline editor modal attached to the cell-edit class from popping up
@@ -159,7 +164,7 @@ function* inlineReminderFieldGenerator(fields) {
   return;
 }
 
-const renderInventoryTableView = ({ isRevision }) => function(event, view, records) {
+const renderInventoryTableView = ($, { isRevision }) => function(event, view, records) {
   const inlineReminderFields = Array.from(
     inlineReminderFieldGenerator(view.fields)
   ).reverse();
@@ -181,19 +186,32 @@ const renderInventoryTableView = ({ isRevision }) => function(event, view, recor
       td.find('span').html(
         '<i class="fa fa-send-o fa-2x"></i>'
       );
-      td.click({
-        field: {
-          key,
-          options
+      td.click(
+        {
+          field: {
+            key,
+            options
+          },
+          record: {
+            isRevision,
+            orderNum
+          }
         },
-        record: {
-          isRevision,
-          orderNum
+        function(event) {
+          return onInlineReminderClick.call(this, $, event);
         }
-      }, onInlineReminderClick);
+      );
     }
   });
 };
 
-$(document).on('knack-view-render.view_50', renderInventoryTableView({ isRevision: false }));
-$(document).on('knack-view-render.view_140', renderInventoryTableView({ isRevision: true }));
+function registerHooks($) {
+  $(document).on('knack-view-render.view_50', renderInventoryTableView($, { isRevision: false }));
+  $(document).on('knack-view-render.view_140', renderInventoryTableView($, { isRevision: true }));
+}
+
+function bootstrap($, callback) {
+  registerHooks($);
+
+  callback();
+}
