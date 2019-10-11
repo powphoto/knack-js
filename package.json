@@ -1,11 +1,11 @@
 {
-  "name": "knife",
+  "name": "knacknife",
   "description": "Work-in-progress \"framework\" for assembling and organizing custom JavaScript in Knack HQ",
   "version": "0.0.0",
   "keywords": "knackhq",
   "private": true,
   "author": "Mike Pastore <mike@powphotography.com>",
-  "repository": "github:powphoto/knife-js",
+  "repository": "github:powphoto/knacknife-js",
   "browser": "Knife",
   "config": {
     "devServer": {

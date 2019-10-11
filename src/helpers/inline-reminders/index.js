@@ -68,7 +68,7 @@ function* inlineReminderFieldGenerator(fields) {
 }
 
 function decorateInlineReminder(td, event) {
-  td.addClass('cell-edit knifejs-inline-reminder');
+  td.addClass('cell-edit knife-inline-reminder');
   td.find('span').html(
     '<i class="fa fa-send-o fa-2x"></i>'
   );
@@ -81,7 +81,7 @@ function undecorateInlineReminder(td, message, icon) {
   td.find('span').html(
     `${message}&nbsp;<i class="fa fa-${icon}"></i>`
   );
-  td.prevAll('.cell-edit .knifejs-inline-reminder').each(function() {
+  td.prevAll('.cell-edit .knife-inline-reminder').each(function() {
     td.off('click');
     td.removeClass('cell-edit');
     td.find('span').html(
