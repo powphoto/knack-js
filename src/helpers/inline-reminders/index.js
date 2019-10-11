@@ -67,12 +67,12 @@ function* inlineReminderFieldGenerator(fields) {
   return;
 }
 
-function decorateInlineReminder(td, event) {
+function decorateInlineReminder(td, eventHandler, eventData) {
   td.addClass('cell-edit knife-inline-reminder');
   td.find('span').html(
     '<i class="fa fa-send-o fa-2x"></i>'
   );
-  td.click(event.data, event.handler);
+  td.click(eventData, eventHandler);
 }
 
 function undecorateInlineReminder(td, message, icon) {
@@ -108,17 +108,14 @@ export default function setupInlineRemindersFactory(view, isRevision) {
         break;
       }
 
-      decorateInlineReminder(tr.find(`td.${key}`), {
-        handler: onInlineReminderClick,
-        data: {
-          field: {
-            key,
-            options
-          },
-          record: {
-            isRevision,
-            orderNum
-          }
+      decorateInlineReminder(tr.find(`td.${key}`), onInlineReminderClick, {
+        field: {
+          key,
+          options
+        },
+        record: {
+          isRevision,
+          orderNum
         }
       });
     }

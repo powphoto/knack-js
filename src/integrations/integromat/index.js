@@ -11,7 +11,7 @@ export default async function generateEvent(key, ref, custom={}) {
     url = new URL(config.integrations.integromat.baseUrl),
     user = Knack.getUserAttributes();
 
-  url.pathname += config.integrations.integromat.event.routerHook;
+  url.pathname += config.integrations.integromat.events.routerHook;
   url.searchParams.append('key', key);
 
   const data = {
@@ -33,7 +33,7 @@ export default async function generateEvent(key, ref, custom={}) {
     body: JSON.stringify(data),
     credentials: 'omit',
     redirect: 'error'
-  }, config.integrations.integromat.event.timeout);
+  }, config.integrations.integromat.events.timeout);
 
   if (!res.ok) {
     throw new Error(res.statusText);

@@ -13,7 +13,7 @@ export default {
   integrations: {
     integromat: {
       baseUrl: 'https://hook.integromat.com',
-      event: {
+      events: {
         routerHook: null,
         timeout: 30_000 // ms
       }
