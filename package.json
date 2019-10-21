@@ -16,12 +16,19 @@
       "matchZones": "^America\\/",
       "startYearOffset": -10,
       "endYearOffset": 5
+    },
+    "s3": {
+      "bucket": "pow-knacknife"
     }
   },
   "scripts": {
+    "build": "rm -rf dist; webpack-cli",
+    "build:prod": "yarn build --mode production",
+    "deploy:prod": "yarn build:prod && yarn upload:prod",
     "lint:js": "eslint *.js src/**/*.js",
     "serve": "webpack-dev-server",
-    "serves": "webpack-dev-server --https --cert .localhost-ssl/private.crt --key .localhost-ssl/private.key"
+    "serves": "webpack-dev-server --https --cert .localhost-ssl/private.crt --key .localhost-ssl/private.key",
+    "upload:prod": "aws s3 sync --acl public-read --cache-control no-cache --content-encoding gzip dist/ s3://$npm_package_config_s3_bucket/production/ --delete"
   },
   "dependencies": {
     "@babel/runtime": "^7.6.3",
@@ -38,6 +45,7 @@
     "babel-eslint": "^10.0.3",
     "babel-loader": "^8.0.6",
     "babel-plugin-lodash": "^3.3.4",
+    "compression-webpack-plugin": "^3.0.0",
     "eslint": "^6.5.1",
     "eslint-loader": "^3.0.2",
     "lodash-webpack-plugin": "^0.11.5",

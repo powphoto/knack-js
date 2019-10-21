@@ -2,6 +2,7 @@
 'use strict;'
 
 const
+  CompressionPlugin = require('compression-webpack-plugin'),
   LodashModuleReplacementPlugin = require('lodash-webpack-plugin'),
   MomentLocalesPlugin = require('moment-locales-webpack-plugin'),
   MomentTimezoneDataPlugin = require('moment-timezone-data-webpack-plugin'),
@@ -61,7 +62,15 @@ module.exports = (env, argv) => {
         startYear: (CURRENT_YEAR + parseInt(process.env.npm_package_config_moment_startYearOffset, 10)),
         endYear: (CURRENT_YEAR + parseInt(process.env.npm_package_config_moment_endYearOffset, 10))
       })
-    ],
+    ].concat(mode !== 'production' ? [] : [
+      new CompressionPlugin({
+        compressionOptions: {
+          level: 5
+        },
+        deleteOriginalAssets: true,
+        minRatio: 1
+      })
+    ]),
     target: 'web'
   };
 };
