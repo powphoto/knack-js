@@ -2,6 +2,7 @@
 'use strict;'
 
 const
+  LodashModuleReplacementPlugin = require('lodash-webpack-plugin'),
   MomentLocalesPlugin = require('moment-locales-webpack-plugin'),
   MomentTimezoneDataPlugin = require('moment-timezone-data-webpack-plugin'),
   TerserPlugin = require('terser-webpack-plugin');
@@ -46,6 +47,10 @@ module.exports = (env, argv) => {
       ]
     },
     plugins: [
+      new LodashModuleReplacementPlugin({
+        collections: true,
+        paths: true
+      }),
       new MomentLocalesPlugin(),
       new MomentTimezoneDataPlugin({
         matchZones: [/^America\//, 'Etc/UTC'],

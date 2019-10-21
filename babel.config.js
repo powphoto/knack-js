@@ -16,6 +16,7 @@ module.exports = {
         version: 3,
       },
       useESModules: true
-    }]
+    }],
+    ['lodash']
   ]
 };

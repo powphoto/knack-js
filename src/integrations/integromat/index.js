@@ -2,6 +2,7 @@
 
 import config from '../..';
 import fetchWithTimeout, { TimeoutError } from '../../utils/fetch-with-timeout';
+import { dasherizeKeys, dedasherizeKeys } from '../../utils/inflectors';
 
 class DeferredError extends Error {
 }
@@ -15,9 +16,9 @@ export default async function generateEvent(key, ref, custom={}) {
   url.searchParams.append('key', key);
 
   const data = {
-    'user-email': user.email,
-    'event-type': { key, custom },
-    'evented-at': new Date().toISOString()
+    userEmail: user.email,
+    eventType: { key, custom },
+    eventedAt: new Date().toISOString()
   };
 
   if (ref) {
@@ -30,7 +31,7 @@ export default async function generateEvent(key, ref, custom={}) {
       'accept': 'application/json, text/plain;q=0.9',
       'content-type': 'application/json'
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify(dasherizeKeys(data)),
     credentials: 'omit',
     redirect: 'error'
   }, config.integrations.integromat.events.timeout);
@@ -59,7 +60,7 @@ export default async function generateEvent(key, ref, custom={}) {
     throw new Error(`Event type mismatch in ${res.status} response from Integromat: expected ${key}, got ${json.key}`);
   }
 
-  return json;
+  return dedasherizeKeys(json);
 };
 
-export { DeferredError, TimeoutError };
+export { DeferredError };
