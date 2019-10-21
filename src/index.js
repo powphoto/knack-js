@@ -1,7 +1,7 @@
 import config from '../config';
 import { registerHooks } from './knack';
 
-export function bootstrap(callback) {
+export function hone(callback) {
   if (callback && typeof callback === 'function') {
     callback(config);
   }
