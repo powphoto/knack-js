@@ -1,4 +1,55 @@
+/* global Knack */
 import $ from 'jquery';
+import moment from 'moment-timezone';
+
+import config from '..';
+import { dedasherizeKeys } from '../utils/inflectors';
+
+const TIMEZONE_MAP = {
+  'Central Time (US & Canada)': 'America/Chicago'
+  // ...TODO...
+};
+
+function* formatEntryGenerator({ dateFormat, timeFormat }) {
+  switch (dateFormat) {
+    case 'mm/dd/yyyy':
+      yield ['dateFormat', 'MM/DD/YYYY'];
+      break;
+    case 'M D, yyyy':
+      yield ['dateFormat', 'MMMM Do, YYYY'];
+      break;
+    case 'dd/mm/yyyy':
+      yield ['dateFormat', 'DD/MM/YYYY'];
+      break;
+  }
+
+  switch (timeFormat) {
+    case 'HH:MM am':
+      yield ['timeFormat', 'h:mma'];
+      break;
+    case 'HH MM (military)':
+      yield ['timeFormat', 'HHmm'];
+      break;
+  }
+}
+
+function mapFormats() {
+  return Object.fromEntries(formatEntryGenerator(...arguments));
+}
+
+function buildFormatString() {
+  return Object.values(mapFormats(...arguments)).join(' ');
+}
+
+const isDateTime = o => o && typeof o === 'object' && o.hasOwnProperty('iso_timestamp');
+
+export function formatDateTime(o, rawFormat) {
+  const
+    { dateFormat, timeFormat } = dedasherizeKeys(rawFormat),
+    m = moment.isMoment(o) ? o : moment(o);
+
+  return m.format(buildFormatString({ dateFormat, timeFormat }));
+}
 
 export function registerHooks(hooks) {
   Object.entries(hooks).forEach(([eventName, namespaces]) => {
@@ -7,3 +58,18 @@ export function registerHooks(hooks) {
     });
   });
 }
+
+export function setTZ() {
+  const
+    original = Knack.app.attributes.settings.timezone,
+    mapped = TIMEZONE_MAP[original];
+
+  if (mapped) {
+    moment.tz.setDefault(mapped);
+  }
+  else {
+    console.error(`** unknown/unmapped Knack timezone: ${original}`);
+  }
+}
+
+export { isDateTime };

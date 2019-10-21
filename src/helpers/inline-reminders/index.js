@@ -1,9 +1,9 @@
 /* global Knack */
 
 import $ from 'jquery';
-import moment from 'moment';
 
 import generateEvent, { DeferredError, TimeoutError } from '../../integrations/integromat';
+import { formatDateTime, isDateTime } from '../../knack';
 
 async function onInlineReminderClick(event) {
   // if the text is hyperlinked this will prevent the browser from updating the url
@@ -11,7 +11,7 @@ async function onInlineReminderClick(event) {
   // prevent the inline editor modal attached to the cell-edit class from popping up
   event.stopImmediatePropagation();
 
-  const { field, record } = event.data;
+  const { field, record, rawFormat } = event.data;
 
   try {
     Knack.showSpinner();
@@ -21,9 +21,7 @@ async function onInlineReminderClick(event) {
       'is-revision': record.isRevision
     });
 
-    const sentAt = moment(custom['sent-at'])
-      .tz('America/Chicago')
-      .format('MM/DD/YYYY hh:mma');
+    const sentAt = formatDateTime(custom.sentAt, rawFormat);
 
     undecorateInlineReminder($(this), sentAt, 'check');
   }
@@ -59,7 +57,8 @@ function* inlineReminderFieldGenerator(fields) {
     yield [
       field.key,
       {
-        numDays: parseInt(found[1], 10)
+        numDays: parseInt(found[1], 10),
+        rawFormat: field.format
       }
     ];
   }
@@ -103,7 +102,7 @@ export default function setupInlineRemindersFactory(view, isRevision) {
 
     for (const [key, options] of inlineReminderFields) {
       const value = record[`${key}_raw`];
-      if (value && typeof value === 'object') {
+      if (isDateTime(value)) {
         // the e.g. 14d reminder has already been sent so don't bother showing 7d link
         break;
       }
@@ -116,7 +115,8 @@ export default function setupInlineRemindersFactory(view, isRevision) {
         record: {
           isRevision,
           orderNum
-        }
+        },
+        rawFormat: options.rawFormat
       });
     }
   };
