@@ -41,7 +41,7 @@ function buildFormatString() {
   return Object.values(mapFormats(...arguments)).join(' ');
 }
 
-const isDateTime = o => o && typeof o === 'object' && o.hasOwnProperty('iso_timestamp');
+export const isDateTime = o => o && typeof o === 'object' && o.hasOwnProperty('iso_timestamp');
 
 export function formatDateTime(o, rawFormat) {
   const
@@ -71,5 +71,3 @@ export function setTZ() {
     console.error(`** unknown/unmapped Knack timezone: ${original}`);
   }
 }
-
-export { isDateTime };

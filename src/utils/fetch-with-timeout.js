@@ -1,4 +1,4 @@
-class TimeoutError extends Error {
+export class TimeoutError extends Error {
 }
 
 export default async function fetchWithTimeout(resource, init, abortAfter) {
@@ -22,5 +22,3 @@ export default async function fetchWithTimeout(resource, init, abortAfter) {
     clearTimeout(timeoutId);
   }
 };
-
-export { TimeoutError };

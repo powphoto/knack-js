@@ -4,7 +4,7 @@ import config from '../..';
 import fetchWithTimeout, { TimeoutError } from '../../utils/fetch-with-timeout';
 import { dasherizeKeys, dedasherizeKeys } from '../../utils/inflectors';
 
-class DeferredError extends Error {
+export class DeferredError extends Error {
 }
 
 export default async function generateEvent(key, ref, custom={}) {
@@ -62,5 +62,3 @@ export default async function generateEvent(key, ref, custom={}) {
 
   return dedasherizeKeys(json);
 };
-
-export { DeferredError };
