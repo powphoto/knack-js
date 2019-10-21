@@ -7,6 +7,8 @@ const
   MomentTimezoneDataPlugin = require('moment-timezone-data-webpack-plugin'),
   TerserPlugin = require('terser-webpack-plugin');
 
+const CURRENT_YEAR = new Date().getFullYear();
+
 module.exports = (env, argv) => {
   const mode = argv.mode || process.env.NODE_ENV || 'development';
 
@@ -51,11 +53,13 @@ module.exports = (env, argv) => {
         collections: true,
         paths: true
       }),
-      new MomentLocalesPlugin(),
+      new MomentLocalesPlugin({
+        localesToKeep: process.env.npm_package_config_moment_localesToKeep.split(',')
+      }),
       new MomentTimezoneDataPlugin({
-        matchZones: [/^America\//, 'Etc/UTC'],
-        startYear: 2000,
-        endYear: new Date().getFullYear() + 5
+        matchZones: ['Etc/UTC', new RegExp(process.env.npm_package_config_moment_matchZones)],
+        startYear: (CURRENT_YEAR + parseInt(process.env.npm_package_config_moment_startYearOffset, 10)),
+        endYear: (CURRENT_YEAR + parseInt(process.env.npm_package_config_moment_endYearOffset, 10))
       })
     ],
     target: 'web'

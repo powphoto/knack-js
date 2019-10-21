@@ -10,6 +10,12 @@
   "config": {
     "devServer": {
       "port": 9000
+    },
+    "moment": {
+      "localesToKeep": "en",
+      "matchZones": "^America\\/",
+      "startYearOffset": -10,
+      "endYearOffset": 5
     }
   },
   "scripts": {
