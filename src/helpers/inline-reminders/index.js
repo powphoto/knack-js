@@ -1,9 +1,9 @@
 /* global Knack */
-
 import $ from 'jquery';
 
-import generateEvent, { DeferredError, TimeoutError } from '../../integrations/integromat';
-import { formatDateTime, isDateTime } from '../../knack';
+import generateEvent, { DeferredError } from '../../integrations/integromat';
+import { TimeoutError } from '../../utils/fetch-with-timeout';
+import { formatDateTime, getField, isDateTime } from '../../knack';
 
 async function onInlineReminderClick(event) {
   // if the text is hyperlinked this will prevent the browser from updating the url
@@ -11,17 +11,19 @@ async function onInlineReminderClick(event) {
   // prevent the inline editor modal attached to the cell-edit class from popping up
   event.stopImmediatePropagation();
 
-  const { field, record, rawFormat } = event.data;
+  const {
+    eventType,
+    orderNum,
+    custom,
+    rawFormat
+  } = event.data;
 
   try {
     Knack.showSpinner();
 
-    const { custom } = await generateEvent('INLINE_REMINDER', record.orderNum, {
-      'template': `day-${field.options.numDays}-reminder`,
-      'is-revision': record.isRevision
-    });
-
-    const sentAt = formatDateTime(custom.sentAt, rawFormat);
+    const
+      response = await generateEvent(eventType, orderNum, custom),
+      sentAt = formatDateTime(response.custom.sentAt, rawFormat);
 
     undecorateInlineReminder($(this), sentAt, 'check');
   }
@@ -49,15 +51,15 @@ function* inlineReminderFieldGenerator(fields) {
       continue;
     }
 
-    const found = /^(\d+)d [Rr]emind/.exec(field.name);
-    if (!found) {
+    const reminder = /(\d+)[\s-]*[Dd](?:ay)?\s+(?:[Rr]emind(?:er)?\s+)?[Ee](?:mail|\.)\s+[Ss]ent/.exec(field.name);
+    if (!reminder) {
       continue;
     }
 
     yield [
       field.key,
       {
-        numDays: parseInt(found[1], 10),
+        reminderDays: parseInt(reminder[1], 10),
         rawFormat: field.format
       }
     ];
@@ -98,25 +100,38 @@ export default function setupInlineRemindersFactory(view, isRevision) {
   return (record) => {
     const
       tr = $(`#${view.key} tr#${record.id}`),
-      orderNum = record.field_2_raw;
+      getter = _ => record[getField(_).ref],
+      orderNum = getter('order.number');
 
     for (const [key, options] of inlineReminderFields) {
+      if (!(key in record)) {
+        continue;
+      }
+
       const value = record[`${key}_raw`];
       if (isDateTime(value)) {
         // the e.g. 14d reminder has already been sent so don't bother showing 7d link
         break;
       }
 
+      const { reminderDays, rawFormat } = options;
+
+      const
+        eventType = 'INLINE_REMINDER',
+        custom = (function() {
+          switch (eventType) {
+            case 'INLINE_REMINDER': return {
+              template: `day-${reminderDays}-reminder`,
+              isRevision
+            };
+          }
+        })();
+
       decorateInlineReminder(tr.find(`td.${key}`), onInlineReminderClick, {
-        field: {
-          key,
-          options
-        },
-        record: {
-          isRevision,
-          orderNum
-        },
-        rawFormat: options.rawFormat
+        custom,
+        eventType,
+        orderNum,
+        rawFormat
       });
     }
   };

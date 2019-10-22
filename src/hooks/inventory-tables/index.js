@@ -1,6 +1,6 @@
 import setupInlineRemindersFactory from '../../helpers/inline-reminders';
 
-export function renderInventoryTableViewFactory({ isRevision }) {
+export function renderInventoryTableViewFactory({ isRevision }={}) {
   return function(event, view, records) {
     const setupInlineReminders = setupInlineRemindersFactory(view, isRevision);
 

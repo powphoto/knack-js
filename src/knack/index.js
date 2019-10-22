@@ -1,14 +1,29 @@
 /* global Knack */
 import $ from 'jquery';
+import {
+  get as _get
+} from 'lodash';
 import moment from 'moment-timezone';
 
 import config from '..';
 import { dedasherizeKeys } from '../utils/inflectors';
 
-const TIMEZONE_MAP = {
-  'Central Time (US & Canada)': 'America/Chicago'
-  // ...TODO...
-};
+const
+  FIELD_MAP = {
+    // TODO: This is specific to our project...
+    order: {
+      number: 2,
+      hasMultipleDueDates: 94,
+      hold30d: {
+        startAt: 98,
+        endAt: 99
+      }
+    }
+  },
+  TIMEZONE_MAP = {
+    'Central Time (US & Canada)': 'America/Chicago'
+    // ...TODO...
+  };
 
 function* formatEntryGenerator({ dateFormat, timeFormat }) {
   switch (dateFormat) {
@@ -70,4 +85,24 @@ export function setTZ() {
   else {
     console.error(`** unknown/unmapped Knack timezone: ${original}`);
   }
+}
+
+export function getField(path) {
+  const [id, options] = [].concat(_get(FIELD_MAP, path, []));
+
+  if (!id) {
+    throw new Error(`** undefined path: ${path}`);
+  }
+
+  const
+    key = `field_${id}`,
+    raw = !(options && typeof options === 'object' && 'raw' in options) || options.raw;
+
+  return {
+    key,
+    ref: key + (raw ? '_raw' : ''),
+    options: {
+      raw
+    }
+  };
 }
