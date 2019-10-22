@@ -6,7 +6,8 @@ export default {
     hooks: {
       'knack-view-render': {
         view_50: renderInventoryTableViewFactory({ isRevision: false }),
-        view_140: renderInventoryTableViewFactory({ isRevision: true })
+        view_140: renderInventoryTableViewFactory({ isRevision: true }),
+        view_91: renderInventoryTableViewFactory()
       }
     }
   },

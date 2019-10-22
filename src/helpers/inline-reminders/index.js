@@ -56,9 +56,12 @@ function* inlineReminderFieldGenerator(fields) {
       continue;
     }
 
+    const hold = /^[Ii]nv(?:entory)?:?\s+(\d+)[\s-]*[Dd](?:ay)?/.exec(field.name);
+
     yield [
       field.key,
       {
+        holdDays: hold && parseInt(hold[1], 10),
         reminderDays: parseInt(reminder[1], 10),
         rawFormat: field.format
       }
@@ -114,12 +117,31 @@ export default function setupInlineRemindersFactory(view, isRevision) {
         break;
       }
 
-      const { reminderDays, rawFormat } = options;
+      const { holdDays, reminderDays, rawFormat } = options;
 
       const
-        eventType = 'INLINE_REMINDER',
+        eventType = holdDays ? '30DAY_UPDATE' : 'INLINE_REMINDER',
         custom = (function() {
           switch (eventType) {
+            case '30DAY_UPDATE': return {
+              isInitialConfirmation: false,
+              get isExactTurnaround() {
+                return !getter('order.hasMultipleDueDates');
+              },
+              get startAt() {
+                const value = getter('order.hold30d.startAt');
+                if (isDateTime(value)) {
+                  return value.iso_timestamp;
+                }
+              },
+              get endAt() {
+                const value = getter('order.hold30d.endAt');
+                if (isDateTime(value)) {
+                  return value.iso_timestamp;
+                }
+              }
+            };
+
             case 'INLINE_REMINDER': return {
               template: `day-${reminderDays}-reminder`,
               isRevision
