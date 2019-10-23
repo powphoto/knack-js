@@ -19,7 +19,6 @@ module.exports = (env, argv) => {
         '.knack.com'
       ],
       contentBase: false,
-      compress: true,
       host: 'localhost',
       port: process.env.npm_package_config_devServer_port
     },
@@ -51,7 +50,6 @@ module.exports = (env, argv) => {
     },
     plugins: [
       new LodashModuleReplacementPlugin({
-        collections: true,
         paths: true
       }),
       new MomentLocalesPlugin({
