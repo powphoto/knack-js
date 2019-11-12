@@ -36,6 +36,8 @@ async function onInlineReminderClick(event) {
     }
     else {
       alert('An unknown error occurred. Please try again later.');
+
+      console.error(err);
     }
 
     undecorateInlineReminder($(this), 'Error', 'frown-o');
