@@ -14,9 +14,16 @@ export default {
   integrations: {
     integromat: {
       baseUrl: 'https://hook.integromat.com',
+      eventDefaults: {
+        // put defaults for all events here
+      },
       events: {
-        routerHook: null,
-        timeout: 30_000 // ms
+        INLINE_REMINDER: {
+          path: undefined
+        },
+        '30DAY_UPDATE': {
+          path: undefined
+        }
       }
     }
   }

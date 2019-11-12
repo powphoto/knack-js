@@ -12,8 +12,15 @@ export default async function generateEvent(key, ref, custom={}) {
     url = new URL(config.integrations.integromat.baseUrl),
     user = Knack.getUserAttributes();
 
-  url.pathname += config.integrations.integromat.events.routerHook;
-  url.searchParams.append('key', key);
+  const { method, path, timeout } = Object.assign({
+      method: 'POST',
+      timeout: 40_000
+    },
+    config.integrations.integromat.eventDefaults,
+    config.integrations.integromat.events[key]
+  );
+
+  url.pathname += path;
 
   const data = {
     userEmail: user.email,
@@ -26,7 +33,7 @@ export default async function generateEvent(key, ref, custom={}) {
   }
 
   const res = await fetchWithTimeout(url, {
-    method: 'POST',
+    method,
     headers: {
       'accept': 'application/json, text/plain;q=0.9',
       'content-type': 'application/json'
@@ -34,7 +41,7 @@ export default async function generateEvent(key, ref, custom={}) {
     body: JSON.stringify(dasherizeKeys(data)),
     credentials: 'omit',
     redirect: 'error'
-  }, config.integrations.integromat.events.timeout);
+  }, timeout);
 
   if (!res.ok) {
     throw new Error(res.statusText);
