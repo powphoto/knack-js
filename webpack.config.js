@@ -3,6 +3,7 @@
 
 const
   CompressionPlugin = require('compression-webpack-plugin'),
+  ESLintPlugin = require('eslint-webpack-plugin'),
   LodashModuleReplacementPlugin = require('lodash-webpack-plugin'),
   MomentLocalesPlugin = require('moment-locales-webpack-plugin'),
   MomentTimezoneDataPlugin = require('moment-timezone-data-webpack-plugin'),
@@ -34,7 +35,7 @@ module.exports = (env, argv) => {
         {
           test: /\.js$/,
           exclude: /node_modules/,
-          use: ['babel-loader', 'eslint-loader']
+          use: ['babel-loader', new ESLintPlugin()]
         }
       ]
     },
