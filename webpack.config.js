@@ -35,7 +35,7 @@ module.exports = (env, argv) => {
         {
           test: /\.js$/,
           exclude: /node_modules/,
-          use: ['babel-loader', new ESLintPlugin()]
+          use: ['babel-loader']
         }
       ]
     },
@@ -44,12 +44,12 @@ module.exports = (env, argv) => {
     },
     optimization: {
       minimizer: [
-        new TerserPlugin({
-          sourceMap: true
-        })
+        new TerserPlugin()
       ]
     },
     plugins: [
+      new ESLintPlugin({
+      }),
       new LodashModuleReplacementPlugin({
         paths: true
       }),
