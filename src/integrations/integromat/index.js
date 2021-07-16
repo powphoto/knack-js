@@ -21,6 +21,8 @@ export default async function generateEvent(key, ref, custom={}) {
     config.integrations.integromat.events[key]
   );
 
+  // TODO: Throw an error if path is still undefined at this point?
+
   url.pathname += path;
 
   const data = {
