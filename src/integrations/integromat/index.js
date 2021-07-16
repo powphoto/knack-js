@@ -12,7 +12,8 @@ export default async function generateEvent(key, ref, custom={}) {
     url = new URL(config.integrations.integromat.baseUrl),
     user = Knack.getUserAttributes();
 
-  const { method, path, timeout } = Object.assign({
+  const { method, path, timeout } = Object.assign(
+    {
       method: 'POST',
       timeout: 40_000
     },

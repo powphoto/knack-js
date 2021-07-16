@@ -87,8 +87,12 @@ export function setTZ() {
   }
 }
 
-export function getField(path) {
-  const [id, options] = [].concat(_get(FIELD_MAP, path, []));
+export function mapField(path, context) {
+  const fieldMap = context && (context in FIELD_MAP)
+    ? FIELD_MAP[context]
+    : FIELD_MAP;
+
+  const [id, options] = [].concat(_get(fieldMap, path, []));
 
   if (!id) {
     throw new Error(`** undefined path: ${path}`);

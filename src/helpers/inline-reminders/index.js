@@ -3,7 +3,7 @@ import $ from 'jquery';
 
 import generateEvent, { DeferredError } from '../../integrations/integromat';
 import { TimeoutError } from '../../utils/fetch-with-timeout';
-import { formatDateTime, getField, isDateTime } from '../../knack';
+import { formatDateTime, mapField, isDateTime } from '../../knack';
 
 async function onInlineReminderClick(event) {
   // if the text is hyperlinked this will prevent the browser from updating the url
@@ -105,8 +105,8 @@ export default function setupInlineRemindersFactory(view, isRevision) {
   return (record) => {
     const
       tr = $(`#${view.key} tr#${record.id}`),
-      getter = _ => record[getField(_).ref],
-      orderNum = getter('order.number');
+      getter = _ => record[mapField(_, 'order').ref],
+      orderNum = getter('number');
 
     for (const [key, options] of inlineReminderFields) {
       if (!(key in record)) {
@@ -128,16 +128,16 @@ export default function setupInlineRemindersFactory(view, isRevision) {
             case '30DAY_UPDATE': return {
               isInitialConfirmation: false,
               get isExactTurnaround() {
-                return !getter('order.hasMultipleDueDates');
+                return !getter('hasMultipleDueDates');
               },
               get startAt() {
-                const value = getter('order.hold30d.startAt');
+                const value = getter('hold30d.startAt');
                 if (isDateTime(value)) {
                   return value.iso_timestamp;
                 }
               },
               get endAt() {
-                const value = getter('order.hold30d.endAt');
+                const value = getter('hold30d.endAt');
                 if (isDateTime(value)) {
                   return value.iso_timestamp;
                 }
