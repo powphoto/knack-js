@@ -4,11 +4,18 @@ import generateEvent, { DeferredError } from '../../integrations/integromat';
 import { mapField } from '../../knack';
 import { TimeoutError } from '../../utils/fetch-with-timeout';
 
-async function makeSplits(event) {
+async function makeSplits({ data: { orderNum } }) {
   try {
     Knack.showSpinner();
 
-    await generateEvent('SPLIT_ORDER_QUANTITY', event.data.orderNum);
+    const res = await generateEvent('SPLIT_ORDER_QUANTITY', orderNum);
+
+    await generateEvent('ALLOCATE_ORDER_QUANTITY', orderNum);
+    await generateEvent('COMBINE_ADJUST_QUANTITIES', orderNum);
+
+    for (const splitSuffix of Object.values(res.custom.splitSuffixes)) {
+      await generateEvent('COMBINE_ADJUST_QUANTITIES', `${orderNum}${splitSuffix}`);
+    }
 
     window.location.reload(true);
   }
