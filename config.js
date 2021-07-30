@@ -21,15 +21,11 @@ export default {
       },
       events: {
         // N.B. These may be further defined in the Knack app settings.
-        '30DAY_UPDATE': {
-          path: undefined
-        },
-        INLINE_REMINDER: {
-          path: undefined
-        },
-        SPLIT_ORDER_QUANTITY: {
-          path: undefined
-        }
+      },
+      registerEvent(key, ...args) {
+        this.events[key] = Object.assign({}, this.eventDefaults, this.events[key], ...args);
+
+        return this.events;
       }
     }
   }
